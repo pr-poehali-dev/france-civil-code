@@ -1,11 +1,210 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import Icon from '@/components/ui/icon';
+
+const legalData = [
+  {
+    id: 'subjects',
+    title: 'Субъекты права',
+    icon: 'Users',
+    sections: [
+      {
+        title: 'Физические лица',
+        content: 'Характеристика правоспособности и дееспособности',
+        details: 'Правоспособность физических лиц возникает с момента рождения и прекращается смертью. Дееспособность наступает с совершеннолетия (18 лет) и предполагает способность своими действиями приобретать и осуществлять гражданские права.'
+      },
+      {
+        title: 'Юридические лица',
+        content: 'Организации, наделенные правами субъекта права',
+        details: 'Юридические лица создаются в порядке, установленном законом, имеют обособленное имущество, могут от своего имени приобретать и осуществлять имущественные и личные неимущественные права.'
+      }
+    ]
+  },
+  {
+    id: 'property',
+    title: 'Вещное право',
+    icon: 'Building',
+    sections: [
+      {
+        title: 'Виды имущества',
+        content: 'Движимое и недвижимое имущество',
+        details: 'Имущество делится на недвижимое (земельные участки, здания) и движимое (все остальное). К недвижимости приравниваются права на недвижимые вещи.'
+      },
+      {
+        title: 'Виды вещных прав',
+        content: 'Право собственности, сервитуты, узуфрукт',
+        details: 'Вещные права включают право собственности (наиболее полное господство над вещью), сервитуты (право пользования чужой вещью), узуфрукт (право пользования и извлечения доходов).'
+      },
+      {
+        title: 'Содержание права собственности',
+        content: 'Владение, пользование и распоряжение',
+        details: 'Собственник имеет право владеть, пользоваться и распоряжаться принадлежащим ему имуществом по своему усмотрению в пределах, установленных законом.'
+      },
+      {
+        title: 'Виды и содержание сервитутов',
+        content: 'Личные и земельные сервитуты',
+        details: 'Сервитуты делятся на личные (устанавливаются в пользу определенного лица) и земельные (связаны с владением земельным участком). Включают право прохода, проезда, водопользования.'
+      }
+    ]
+  },
+  {
+    id: 'obligations',
+    title: 'Обязательственное право',
+    icon: 'FileText',
+    sections: [
+      {
+        title: 'Основания возникновения и прекращения обязательств',
+        content: 'Договор, деликт, неосновательное обогащение',
+        details: 'Обязательства возникают из договоров, причинения вреда (деликтов), неосновательного обогащения. Прекращаются исполнением, зачетом, новацией, прощением долга.'
+      },
+      {
+        title: 'Понятие договора',
+        content: 'Соглашение двух или более лиц',
+        details: 'Договор - это соглашение, посредством которого одно или несколько лиц обязываются перед другим лицом или лицами дать что-либо, сделать что-либо или не делать чего-либо.'
+      },
+      {
+        title: 'Условия действительности договора',
+        content: 'Согласие, способность, определенный предмет, дозволенное основание',
+        details: 'Для действительности договора необходимы: свободное согласие стороны, которая обязывается; способность заключать договор; определенный предмет обязательства; дозволенное основание.'
+      },
+      {
+        title: 'Принципы договора',
+        content: 'Свобода договора, обязательная сила',
+        details: 'Основные принципы: свобода договора (каждый волен заключать или не заключать договор), обязательная сила договора (договор - закон для сторон), добросовестность исполнения.'
+      },
+      {
+        title: 'Виды договоров',
+        content: 'Купля-продажа, наем, заем, поручение',
+        details: 'Основные виды договоров включают куплю-продажу, наем имущества, заем, договор товарищества, поручение, хранение и многие другие поименованные в Кодексе договоры.'
+      }
+    ]
+  },
+  {
+    id: 'family',
+    title: 'Брачно-семейное право',
+    icon: 'Heart',
+    sections: [
+      {
+        title: 'Понятие брака',
+        content: 'Союз мужчины и женщины',
+        details: 'Брак определяется как союз мужчины и женщины, заключенный в установленном законом порядке с целью создания семьи. Признается только гражданская форма брака.'
+      },
+      {
+        title: 'Условия действительности брака',
+        content: 'Возраст, согласие, отсутствие препятствий',
+        details: 'Условия заключения брака: достижение брачного возраста (18 лет), добровольное согласие, отсутствие другого зарегистрированного брака, отсутствие близкого родства.'
+      },
+      {
+        title: 'Основания расторжения брака',
+        content: 'По взаимному согласию, по требованию одного из супругов',
+        details: 'Брак может быть расторгнут по взаимному согласию супругов, по требованию одного из них при наличии оснований (измена, жестокое обращение и др.), либо после раздельного проживания.'
+      },
+      {
+        title: 'Права и обязанности супругов',
+        content: 'Имущественные и личные права',
+        details: 'Супруги имеют равные личные и имущественные права. Существует режим общности имущества, если брачным договором не установлено иное. Супруги обязаны содержать друг друга.'
+      },
+      {
+        title: 'Правовое положение детей',
+        content: 'Права детей, родительская власть',
+        details: 'Дети имеют право на содержание и воспитание. До совершеннолетия находятся под родительской властью, которая включает право и обязанность заботиться о ребенке, его имуществе и представлять его интересы.'
+      }
+    ]
+  },
+  {
+    id: 'inheritance',
+    title: 'Наследственное право',
+    icon: 'ScrollText',
+    sections: [
+      {
+        title: 'Виды наследования',
+        content: 'По закону и по завещанию',
+        details: 'Наследование осуществляется по завещанию или по закону. Наследование по закону имеет место, когда завещание отсутствует либо не охватывает все имущество наследодателя.'
+      },
+      {
+        title: 'Круг наследников и очередность наследования',
+        content: 'Дети, родители, супруг, иные родственники',
+        details: 'Наследники по закону призываются в определенной очередности: первая очередь - дети и супруг; вторая - родители, братья и сестры; третья - дед, бабка и более дальние родственники.'
+      },
+      {
+        title: 'Другие особенности наследования',
+        content: 'Обязательная доля, принятие и отказ от наследства',
+        details: 'Существует институт обязательной доли (резерв), которую нельзя лишить ближайших наследников. Наследство может быть принято явно или молчаливо, либо от него можно отказаться.'
+      }
+    ]
+  }
+];
 
 const Index = () => {
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4 color-black text-black">Добро пожаловать!</h1>
-        <p className="text-xl text-gray-600">тут будет отображаться ваш проект</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <div className="container mx-auto px-4 py-16 max-w-7xl">
+        <div className="text-center mb-16 animate-fade-in">
+          <h1 className="text-6xl font-bold text-slate-900 mb-4 tracking-tight">
+            Гражданский кодекс Франции
+          </h1>
+          <p className="text-xl text-slate-600 font-light">
+            Code Civil • Структура правовых институтов
+          </p>
+          <div className="w-24 h-1 bg-blue-500 mx-auto mt-6"></div>
+        </div>
+
+        <div className="space-y-8">
+          {legalData.map((category, index) => (
+            <Card 
+              key={category.id} 
+              className="overflow-hidden hover:shadow-xl transition-all duration-300 border-slate-200 animate-fade-in"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-6 flex items-center gap-4">
+                <div className="bg-blue-500 p-3 rounded-lg">
+                  <Icon name={category.icon} className="text-white" size={28} />
+                </div>
+                <h2 className="text-3xl font-bold text-white tracking-tight">
+                  {category.title}
+                </h2>
+              </div>
+
+              <div className="p-8">
+                <Accordion type="single" collapsible className="space-y-4">
+                  {category.sections.map((section, idx) => (
+                    <AccordionItem 
+                      key={idx} 
+                      value={`${category.id}-${idx}`}
+                      className="border border-slate-200 rounded-lg px-6 hover:border-blue-300 transition-colors"
+                    >
+                      <AccordionTrigger className="text-left hover:no-underline py-5">
+                        <div className="flex items-start gap-4 pr-4">
+                          <div className="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold text-sm">
+                            {idx + 1}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-semibold text-slate-900 mb-1">
+                              {section.title}
+                            </h3>
+                            <p className="text-sm text-slate-500 font-normal">
+                              {section.content}
+                            </p>
+                          </div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="pt-2 pb-6 px-12 text-slate-700 leading-relaxed">
+                        {section.details}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        <footer className="mt-16 text-center text-slate-500 text-sm">
+          <p>Code Civil des Français • Действует с 1804 года</p>
+        </footer>
       </div>
     </div>
   );
